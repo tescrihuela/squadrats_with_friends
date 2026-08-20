@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: squadrats-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: squadrats
+      POSTGRES_USER: squadrats
+      POSTGRES_PASSWORD: change-moi
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    ports:
+      - "5433:5432"
+
+volumes:
+  postgres_data:

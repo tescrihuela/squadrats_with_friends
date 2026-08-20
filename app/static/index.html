@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squadrats Maison</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/squadrats/static/style.css">
+</head>
+<body>
+<div id="app">
+    <aside id="sidebar">
+        <header>
+            <h1>Squadrats Maison</h1>
+        <button id="addButton" class="primary">+ Ajouter</button>
+	<button id="refreshLayersBtn" type="button" class="primary">↻ Actualiser</button>
+</header>
+
+        <section class="panel">
+            <h2>Classement</h2>
+            <div class="ranking-header">
+                <span>Utilisateur</span>
+                <span>Size</span>
+            </div>
+            <div id="ranking"></div>
+        </section>
+
+        <section>
+            <div id="layers"></div>
+        </section>
+    </aside>
+
+    <main>
+        <div id="map"></div>
+    </main>
+</div>
+
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+        <button id="closeModal" class="close">×</button>
+        <h2 id="modalTitle">Ajouter un utilisateur</h2>
+
+        <form id="layerForm">
+            <input type="hidden" id="layerId">
+
+            <label>
+                Nom
+                <input type="text" id="name" required placeholder="Thomas">
+            </label>
+
+            <label>
+                URL du GeoJSON
+                <input type="url" id="geojsonUrl" required placeholder="https://...">
+            </label>
+
+            <div id="formError" class="error"></div>
+
+            <div class="buttons">
+                <button type="button" id="cancelButton">Annuler</button>
+                <button type="submit" class="primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/squadrats/static/app.js"></script>
+</body>
+</html>

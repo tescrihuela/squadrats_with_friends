@@ -1,0 +1,243 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
+#app {
+    display: flex;
+    height: 100vh;
+}
+
+#sidebar {
+    width: 380px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+header {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0;
+}
+
+h2 {
+    font-size: 15px;
+    margin: 0 0 10px;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+main {
+    flex: 1;
+}
+
+.primary {
+    background: #3388ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.primary:hover {
+    background: #2778e8;
+}
+
+.panel {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.ranking-header,
+.ranking-row {
+    display: grid;
+    grid-template-columns: 35px 1fr 80px;
+    gap: 6px;
+    align-items: center;
+}
+
+.ranking-header {
+    font-size: 11px;
+    color: #777;
+    margin-bottom: 4px;
+}
+
+.ranking-row {
+    padding: 5px 0;
+    border-top: 1px solid #eee;
+    font-size: 13px;
+}
+
+.ranking-position {
+    color: #777;
+    text-align: right;
+}
+
+.ranking-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ranking-size {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.empty-ranking {
+    color: #777;
+    font-size: 13px;
+}
+
+.user {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+}
+
+.user-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-name {
+    font-weight: bold;
+    flex: 1;
+}
+
+.icon-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.features {
+    margin-left: 25px;
+    margin-top: 8px;
+}
+
+.feature {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 3px 0;
+}
+
+.feature-size {
+    color: #777;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.feature.disabled {
+    opacity: 0.5;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    width: min(500px, 90vw);
+    padding: 25px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    border: none;
+    background: none;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+form input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.error {
+    color: #c0392b;
+    margin-top: 15px;
+}
+
+/* Le contrôle Leaflet des fonds reste lisible sur la carte. */
+.leaflet-control-layers {
+    font-size: 13px;
+}
+
+#addButton,
+#refreshLayersBtn {
+    width: 105px;
+    height: 38px;
+    padding: 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ranking-header {
+    display: grid;
+    grid-template-columns: 1fr 70px;
+    align-items: center;
+}
+
+.ranking-header span:last-child {
+    text-align: right;
+}
