@@ -1,18 +1,21 @@
 from datetime import datetime
-from pydantic import BaseModel, HttpUrl, ConfigDict
+from pydantic import BaseModel, ConfigDict
+
 
 class LayerCreate(BaseModel):
     name: str
-    geojson_url: HttpUrl
+    squadrats_uid: str
+
 
 class LayerUpdate(BaseModel):
     name: str | None = None
-    geojson_url: HttpUrl | None = None
+    squadrats_uid: str | None = None
+
 
 class LayerResponse(BaseModel):
     id: int
     name: str
-    geojson_url: str
+    squadrats_uid: str
     geojson: dict
     created_at: datetime
     updated_at: datetime

@@ -11,6 +11,7 @@ from .schemas import LayerCreate, LayerUpdate, LayerResponse
 
 BASE_DIR = Path(__file__).resolve().parent
 Base.metadata.create_all(bind=engine)
+SQUADRATS_GEOJSON_URL = ("https://mainframe-api.squadrats.com/anonymous/squadrants/{uid}/geojson")
 
 app = FastAPI(
     title="Squadrats Maison",
@@ -23,24 +24,74 @@ app.mount(
     name="static"
 )
 
+def get_geojson_url(uid: str) -> str:
+    return SQUADRATS_GEOJSON_URL.format(uid=uid)
+
 @app.get("/squadrats/")
 def index():
     return FileResponse(BASE_DIR / "static" / "index.html")
 
-async def download_geojson(url: str) -> dict:
+async def get_geojson_url_from_uid(uid: str) -> str:
+    url = get_geojson_url(uid)
+
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with httpx.AsyncClient(
+            follow_redirects=True,
+            timeout=30
+        ) as client:
             response = await client.get(url)
             response.raise_for_status()
+
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=400, detail=f"Impossible de télécharger le GeoJSON : {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Impossible de récupérer l'URL du GeoJSON : {e}"
+        )
 
     try:
         data = response.json()
     except ValueError:
-        raise HTTPException(status_code=400, detail="L'URL ne renvoie pas un JSON valide.")
+        raise HTTPException(
+            status_code=400,
+            detail="L'API Squadrats ne renvoie pas un JSON valide."
+        )
+
+    geojson_url = data.get("url")
+
+    if not geojson_url:
+        raise HTTPException(
+            status_code=400,
+            detail="L'API Squadrats ne fournit pas d'URL GeoJSON."
+        )
+
+    return geojson_url
+
+
+async def download_geojson(url: str) -> dict:
+    try:
+        async with httpx.AsyncClient(
+            follow_redirects=True,
+            timeout=30
+        ) as client:
+            response = await client.get(url)
+            response.raise_for_status()
+
+    except httpx.HTTPError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Impossible de télécharger le GeoJSON : {e}"
+        )
+
+    try:
+        data = response.json()
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="L'URL ne renvoie pas un JSON valide."
+        )
 
     validate_geojson(data)
+
     return data
 
 def validate_geojson(data: dict):
@@ -80,7 +131,11 @@ async def refresh_layers(db: Session = Depends(get_db)):
 
     for layer in layers:
         try:
-            geojson = await download_geojson(layer.geojson_url)
+            geojson_url = await get_geojson_url_from_uid(
+                layer.squadrats_uid
+            )
+
+            geojson = await download_geojson(geojson_url)
 
             crud.update_layer(
                 db,
@@ -108,7 +163,7 @@ async def refresh_layers(db: Session = Depends(get_db)):
         "failed": sum(1 for r in results if not r["success"]),
         "results": results
     }
-
+    
 @app.get("/squadrats/api/layers/{layer_id}", response_model=LayerResponse)
 def get_layer(layer_id: int, db: Session = Depends(get_db)):
     layer = crud.get_layer(db, layer_id)
@@ -116,37 +171,92 @@ def get_layer(layer_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
     return layer
 
-@app.post("/squadrats/api/layers", response_model=LayerResponse, status_code=201)
-async def create_layer(payload: LayerCreate, db: Session = Depends(get_db)):
+@app.post(
+    "/squadrats/api/layers",
+    response_model=LayerResponse,
+    status_code=201
+)
+async def create_layer(
+    payload: LayerCreate,
+    db: Session = Depends(get_db)
+):
     name = payload.name.strip()
-    if not name:
-        raise HTTPException(status_code=400, detail="Le nom est obligatoire.")
 
-    geojson_url = str(payload.geojson_url)
+    if not name:
+        raise HTTPException(
+            status_code=400,
+            detail="Le nom est obligatoire."
+        )
+
+    uid = payload.squadrats_uid.strip()
+
+    if not uid:
+        raise HTTPException(
+            status_code=400,
+            detail="Le UID Squadrats est obligatoire."
+        )
+
+    geojson_url = await get_geojson_url_from_uid(uid)
     geojson = await download_geojson(geojson_url)
 
-    return crud.create_layer(db, name, geojson_url, geojson)
+    return crud.create_layer(
+        db,
+        name,
+        uid,
+        geojson
+    )
 
-@app.put("/squadrats/api/layers/{layer_id}", response_model=LayerResponse)
-async def update_layer(layer_id: int, payload: LayerUpdate, db: Session = Depends(get_db)):
+@app.put(
+    "/squadrats/api/layers/{layer_id}",
+    response_model=LayerResponse
+)
+async def update_layer(
+    layer_id: int,
+    payload: LayerUpdate,
+    db: Session = Depends(get_db)
+):
     layer = crud.get_layer(db, layer_id)
+
     if layer is None:
-        raise HTTPException(status_code=404, detail="Utilisateur introuvable.")
+        raise HTTPException(
+            status_code=404,
+            detail="Utilisateur introuvable."
+        )
 
     geojson = None
-    geojson_url = None
+    uid = None
 
-    if payload.geojson_url is not None:
-        geojson_url = str(payload.geojson_url)
+    if payload.squadrats_uid is not None:
+        uid = payload.squadrats_uid.strip()
+
+        if not uid:
+            raise HTTPException(
+                status_code=400,
+                detail="Le UID Squadrats ne peut pas être vide."
+            )
+
+        url = get_geojson_url(uid)
+        geojson_url = await get_geojson_url_from_uid(uid)
         geojson = await download_geojson(geojson_url)
-
+        
     name = None
+
     if payload.name is not None:
         name = payload.name.strip()
-        if not name:
-            raise HTTPException(status_code=400, detail="Le nom ne peut pas être vide.")
 
-    return crud.update_layer(db, layer, name=name, geojson_url=geojson_url, geojson=geojson)
+        if not name:
+            raise HTTPException(
+                status_code=400,
+                detail="Le nom ne peut pas être vide."
+            )
+
+    return crud.update_layer(
+        db,
+        layer,
+        name=name,
+        squadrats_uid=uid,
+        geojson=geojson
+    )
 
 @app.delete("/squadrats/api/layers/{layer_id}")
 def delete_layer(layer_id: int, db: Session = Depends(get_db)):

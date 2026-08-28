@@ -241,3 +241,126 @@ form input {
 .ranking-header span:last-child {
     text-align: right;
 }
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+.sidebar-toggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* La carte prend tout l'écran */
+    #app {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    main {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Panneau latéral */
+    #sidebar {
+        position: absolute;
+        z-index: 2000;
+
+        top: 0;
+        left: 0;
+
+        width: 85vw;
+        max-width: 380px;
+        height: 100vh;
+
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+
+        box-shadow: 3px 0 12px rgba(0, 0, 0, 0.25);
+
+        overflow-y: auto;
+    }
+
+    /* Panneau ouvert */
+    #sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+.sidebar-toggle {
+    display: flex;
+
+    position: fixed;
+    z-index: 99999 !important;
+
+    top: 10px;
+    right: 10px;
+
+    width: 40px;
+    height: 40px;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    background: white;
+    color: #333;
+
+    font-size: 22px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+}
+
+    .sidebar-toggle:hover {
+        background: #f4f4f4;
+    }
+
+    /* Header du panneau */
+    #sidebar > header {
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+
+    #sidebar > header h1 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Boutons */
+    #addButton,
+    #refreshLayersBtn {
+        width: 105px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+
+    /* Classement */
+    .ranking-header {
+        grid-template-columns: 1fr 70px;
+    }
+}
+
+.user-color-indicator {
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-right: 6px;
+}

@@ -1,5 +1,6 @@
 const map = L.map("map").setView([46.5, 2.5], 6);
 
+
 // --- Fonds de carte ---
 const baseMaps = {
     "OpenStreetMap": L.tileLayer(
@@ -11,7 +12,7 @@ const baseMaps = {
     ),
 
     "Carto Positron": L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2gk1_1_8e1ea88c2fa1c25338c6a05f",
         {
             maxZoom: 20,
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -19,7 +20,7 @@ const baseMaps = {
     ),
 
     "Carto Dark Matter": L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_2gk1_1_8e1ea88c2fa1c25338c6a05f",
         {
             maxZoom: 20,
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -44,14 +45,134 @@ const baseMaps = {
 };
 
 baseMaps["Carto Positron"].addTo(map);
-L.control.layers(baseMaps, null, {collapsed: false}).addTo(map);
+
+
+// --- Grilles Squadrats / Squadratinhos ---
+
+const squadratsGrid = L.layerGroup();
+const squadratinhosGrid = L.layerGroup();
+
+const overlayMaps = {
+    "Squadrats": squadratsGrid,
+    "Squadratinhos": squadratinhosGrid
+};
+
+L.control.layers(
+    baseMaps,
+    overlayMaps,
+    {
+        collapsed: false
+    }
+).addTo(map);
+
+// --- Calcul des tuiles OSM ---
+
+function latLngToTile(lat, lon, zoom) {
+    const n = Math.pow(2, zoom);
+
+    const x = Math.floor((lon + 180) / 360 * n);
+
+    const latRad = lat * Math.PI / 180;
+
+    const y = Math.floor(
+        (1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * n
+    );
+
+    return { x, y };
+}
+
+
+function tileToLatLng(x, y, zoom) {
+    const n = Math.pow(2, zoom);
+
+    const lon = x / n * 360 - 180;
+
+    const latRad = Math.atan(
+        Math.sinh(Math.PI * (1 - 2 * y / n))
+    );
+
+    const lat = latRad * 180 / Math.PI;
+
+    return { lat, lon };
+}
+
+function updateGrid(layerGroup, zoom) {
+    layerGroup.clearLayers();
+
+    const bounds = map.getBounds();
+
+    const northWest = latLngToTile(
+        bounds.getNorth(),
+        bounds.getWest(),
+        zoom
+    );
+
+    const southEast = latLngToTile(
+        bounds.getSouth(),
+        bounds.getEast(),
+        zoom
+    );
+
+    // Petite marge pour éviter les trous au bord de l'écran
+    const minX = northWest.x - 1;
+    const maxX = southEast.x + 1;
+    const minY = northWest.y - 1;
+    const maxY = southEast.y + 1;
+
+    for (let x = minX; x <= maxX; x++) {
+        for (let y = minY; y <= maxY; y++) {
+
+            const nw = tileToLatLng(x, y, zoom);
+            const se = tileToLatLng(x + 1, y + 1, zoom);
+
+            L.rectangle(
+                [
+                    [nw.lat, nw.lon],
+                    [se.lat, se.lon]
+                ],
+                {
+                    color: "#1b5e20",
+                    weight: 0.5,
+                    opacity: 0.2,
+                    fill: false,
+                    interactive: false
+                }
+            ).addTo(layerGroup);
+        }
+    }
+}
+
+
+function updateGrids() {
+
+    const zoom = map.getZoom();
+
+    if (map.hasLayer(squadratsGrid)) {
+        if (zoom >= 10) {
+		updateGrid(squadratsGrid, 14);
+	}
+	else {
+		squadratsGrid.clearLayers();
+	}
+    }
+
+    if (map.hasLayer(squadratinhosGrid)) {
+
+        if (zoom >= 13) {
+            updateGrid(squadratinhosGrid, 17);
+        } else {
+            squadratinhosGrid.clearLayers();
+        }
+    }
+}
+map.on("moveend", updateGrids);
 
 // --- Données ---
 const users = new Map();
 
 const colors = [
-    "#3388ff",
     "#e74c3c",
+    "#3388ff",
     "#9b59b6",
     "#f39c12",
     "#2ecc71",
@@ -273,9 +394,13 @@ function renderUsers(layers) {
                 });
         });
 
-        const name = document.createElement("span");
-        name.className = "user-name";
-        name.textContent = user.name;
+	const name = document.createElement("span");
+	name.className = "user-name";
+	name.textContent = user.name;
+
+	const colorIndicator = document.createElement("span");
+	colorIndicator.className = "user-color-indicator";
+	colorIndicator.style.backgroundColor = getColor(index);
 
         const edit = document.createElement("button");
         edit.className = "icon-button";
@@ -289,7 +414,7 @@ function renderUsers(layers) {
         remove.textContent = "🗑️";
         remove.addEventListener("click", () => deleteUser(user));
 
-        header.append(checkbox, name, edit, remove);
+        header.append(checkbox, colorIndicator, name, edit, remove);
         element.appendChild(header);
 
         const features = document.createElement("div");
@@ -297,6 +422,18 @@ function renderUsers(layers) {
 
         user.geojson.features.forEach(feature => {
             const featureName = getFeatureName(feature);
+
+            // Entités techniques que l'on ne veut pas afficher dans l'interface
+            const hiddenFeatures = [
+                "backyardinhos",
+                "backyards",
+                "squadrats-outline"
+            ];
+
+            if (hiddenFeatures.includes(featureName.toLowerCase())) {
+                return;
+            }
+
             const featureSize = getFeatureSize(feature);
 
             const row = document.createElement("label");
@@ -350,7 +487,7 @@ function openAddModal() {
     document.getElementById("modalTitle").textContent = "Ajouter un utilisateur";
     document.getElementById("layerId").value = "";
     document.getElementById("name").value = "";
-    document.getElementById("geojsonUrl").value = "";
+    document.getElementById("squadratsUid").value = "";
     document.getElementById("formError").textContent = "";
     document.getElementById("modal").classList.remove("hidden");
 }
@@ -359,7 +496,7 @@ function openEditModal(user) {
     document.getElementById("modalTitle").textContent = "Modifier un utilisateur";
     document.getElementById("layerId").value = user.id;
     document.getElementById("name").value = user.name;
-    document.getElementById("geojsonUrl").value = user.geojson_url;
+    document.getElementById("squadratsUid").value = user.squadrats_uid;
     document.getElementById("formError").textContent = "";
     document.getElementById("modal").classList.remove("hidden");
 }
@@ -373,19 +510,24 @@ async function saveUser(event) {
 
     const id = document.getElementById("layerId").value;
     const name = document.getElementById("name").value;
-    const geojson_url = document.getElementById("geojsonUrl").value;
+    const squadrats_uid = document.getElementById("squadratsUid").value;
     const error = document.getElementById("formError");
 
     error.textContent = "Téléchargement et validation du GeoJSON...";
 
     try {
         const method = id ? "PUT" : "POST";
-        const url = id ? `/squadrats/api/layers/${id}` : "/squadrats/api/layers";
+        const url = id
+            ? `/squadrats/api/layers/${id}`
+            : "/squadrats/api/layers";
 
         const response = await fetch(url, {
             method,
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({name, geojson_url})
+            body: JSON.stringify({
+                name,
+                squadrats_uid
+            })
         });
 
         const data = await response.json();
@@ -396,6 +538,7 @@ async function saveUser(event) {
 
         closeModal();
         await loadLayers();
+
     } catch (e) {
         error.textContent = e.message;
     }
@@ -461,8 +604,40 @@ document
 
         } finally {
             button.disabled = false;
-            button.textContent = "🔄 Actualiser les stats";
+            button.textContent = "↻ Actualiser";
         }
     });
 
 loadLayers();
+
+L.control.locate({
+    position: "topleft",
+    setView: "once",
+    flyTo: true,
+    keepCurrentZoomLevel: false,
+    initialZoomLevel: 16,
+    drawCircle: true,
+    drawMarker: true,
+    strings: {
+        title: "Me localiser"
+    },
+    locateOptions: {
+        enableHighAccuracy: true
+    }
+}).addTo(map);
+
+const sidebar = document.getElementById("sidebar");
+const sidebarToggle = document.getElementById("sidebarToggle");
+
+sidebarToggle.addEventListener("click", function () {
+
+    const isOpen = sidebar.classList.toggle("mobile-open");
+
+    if (isOpen) {
+        sidebarToggle.textContent = "\u00D7";
+        sidebarToggle.title = "Fermer le menu";
+    } else {
+        sidebarToggle.textContent = "\u2630";
+        sidebarToggle.title = "Afficher le menu";
+    }
+});

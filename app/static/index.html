@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squadrats Maison</title>
+    <link rel="icon" type="image/svg+xml" href="/squadrats/static/Q-production.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.84.2/dist/L.Control.Locate.min.css">
     <link rel="stylesheet" href="/squadrats/static/style.css">
 </head>
 <body>
@@ -29,15 +31,17 @@
             <div id="layers"></div>
         </section>
     </aside>
-
     <main>
         <div id="map"></div>
+        <button id="sidebarToggle" class="sidebar-toggle" title="Afficher le menu">
+            &#9776;
+        </button>
     </main>
 </div>
 
 <div id="modal" class="modal hidden">
     <div class="modal-content">
-        <button id="closeModal" class="close">×</button>
+        <button id="closeModal" class="close">&#215;</button>
         <h2 id="modalTitle">Ajouter un utilisateur</h2>
 
         <form id="layerForm">
@@ -49,8 +53,13 @@
             </label>
 
             <label>
-                URL du GeoJSON
-                <input type="url" id="geojsonUrl" required placeholder="https://...">
+                UID Squadrats
+                <input
+                    type="text"
+                    id="squadratsUid"
+                    required
+                    placeholder="5uGyABXymyL1i5RP1YtpiBzUG4x1"
+                >
             </label>
 
             <div id="formError" class="error"></div>
@@ -64,6 +73,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.84.2/dist/L.Control.Locate.min.js"></script>
 <script src="/squadrats/static/app.js"></script>
 </body>
 </html>
