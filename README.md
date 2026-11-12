@@ -33,9 +33,11 @@ Puis ouvrir http://localhost:8000
 - validation de FeatureCollection avec exactement 9 features
 - validation de `properties.name`
 - stockage persistant dans PostgreSQL
-- affichage transparent des 9 entités
-- affichage/masquage d'un utilisateur
-- affichage/masquage de chaque entité
+- affichage de tout le monde sur une seule carte
+- mode commun (Squadrats, Yardinho, Ubersquadrat, …) appliqué à chaque personne
+- contour superposable
+- affichage/masquage d'une personne, tout afficher / tout masquer
+- classement selon la taille du mode en cours
 - modification de l'URL et du nom
 - suppression
 
@@ -46,9 +48,13 @@ Ce MVP ne comporte pas encore d'authentification ni de protection SSRF avancée.
 
 ## Nouveautés de la version 2
 
-- Layer switcher Leaflet avec OpenStreetMap, Carto Positron, Carto Dark Matter, Esri World Imagery et Esri World Gray Canvas.
-- Les 9 entités sont triées alphabétiquement.
-- Seule `Squadratinhos` est activée par défaut pour chaque utilisateur.
-- La propriété GeoJSON `size` est récupérée côté navigateur et affichée à côté de chaque entité.
-- Classement dynamique des utilisateurs selon la somme des `size` des entités actuellement sélectionnées et des utilisateurs actuellement visibles.
+- Layer switcher Leaflet avec fond gris clair, OpenStreetMap et satellite.
+- La propriété GeoJSON `size` est récupérée côté navigateur.
 - Le classement est recalculé sans recharger la page.
+
+## Nouveautés de la version 3
+
+- Un sélecteur de mode commun remplace les cases par entité : Yardinho, Ubersquadrat, Squadratinhos, etc. s’affichent pour tout le monde d’un seul coup.
+- Le contour (`squadrats-outline`) se superpose sans quitter le mode en cours.
+- Le classement, la légende et le cadrage suivent le mode choisi.
+- Les tracés les plus petits sont dessinés au-dessus, pour rester visibles.

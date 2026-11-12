@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#663399">
     <title>Squadrats Maison</title>
+<<<<<<< HEAD
     <link rel="icon" type="image/svg+xml" href="/squadrats/static/Q-production.svg">
+=======
+    <link rel="icon" href="/squadrats/static/Q-production.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+>>>>>>> bd11d53 (maj)
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.84.2/dist/L.Control.Locate.min.css">
     <link rel="stylesheet" href="/squadrats/static/style.css">
@@ -12,47 +20,92 @@
 <body>
 <div id="app">
     <aside id="sidebar">
-        <header>
-            <h1>Squadrats Maison</h1>
-        <button id="addButton" class="primary">+ Ajouter</button>
-	<button id="refreshLayersBtn" type="button" class="primary">↻ Actualiser</button>
-</header>
-
-        <section class="panel">
-            <h2>Classement</h2>
-            <div class="ranking-header">
-                <span>Utilisateur</span>
-                <span>Size</span>
+        <header class="topbar">
+            <div class="brand">
+                <img src="/squadrats/static/Q-production.svg" alt="" width="46" height="46">
+                <div>
+                    <h1>Squadrats Maison</h1>
+                    <p>Les territoires de tout le monde, sur une seule carte.</p>
+                </div>
             </div>
-            <div id="ranking"></div>
+            <div class="top-actions">
+                <button id="refreshLayersBtn" class="btn ghost" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.3L21 8"/><path d="M21 3v5h-5"/></svg>
+                    <span>Actualiser</span>
+                </button>
+                <button id="addButton" class="btn primary" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    <span>Ajouter</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="card" aria-labelledby="modeHeading">
+            <div class="section-head">
+                <p class="eyebrow">Mode commun</p>
+                <h2 id="modeHeading">Pour tout le monde</h2>
+            </div>
+            <p class="lede">Un seul choix affiche ce calque pour chaque personne.</p>
+            <div id="modeGrid" role="radiogroup" aria-label="Mode affiché pour tout le monde"></div>
+            <p id="modeHint" class="hint">Chargement des cartes…</p>
+            <label class="switch-row" id="outlineRow" hidden>
+                <input type="checkbox" id="outlineToggle">
+                <span>Superposer le contour</span>
+            </label>
         </section>
 
-        <section>
-            <div id="layers"></div>
+        <section class="card" aria-labelledby="rankingTitle">
+            <div class="section-head">
+                <div>
+                    <p class="eyebrow">Classement</p>
+                    <h2 id="rankingTitle">Squadratinhos</h2>
+                </div>
+                <div class="text-actions">
+                    <button type="button" id="showAll">Tout afficher</button>
+                    <button type="button" id="hideAll">Tout masquer</button>
+                    <button type="button" id="fitButton">Cadrer</button>
+                </div>
+            </div>
+            <p id="modeSummary" class="summary" aria-live="polite">Chargement…</p>
+            <div id="people"></div>
         </section>
     </aside>
     <main>
         <div id="map"></div>
+<<<<<<< HEAD
         <button id="sidebarToggle" class="sidebar-toggle" title="Afficher le menu">
             &#9776;
         </button>
+=======
+        <div id="mapBadge" class="map-badge">Squadratinhos</div>
+        <div id="mapLegend" class="map-legend"></div>
+>>>>>>> bd11d53 (maj)
     </main>
 </div>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <div id="modal" class="modal hidden">
     <div class="modal-content">
+<<<<<<< HEAD
         <button id="closeModal" class="close">&#215;</button>
         <h2 id="modalTitle">Ajouter un utilisateur</h2>
+=======
+        <button id="closeModal" class="close" type="button" aria-label="Fermer">×</button>
+        <p class="eyebrow">Carte</p>
+        <h2 id="modalTitle">Ajouter une personne</h2>
+>>>>>>> bd11d53 (maj)
 
         <form id="layerForm">
             <input type="hidden" id="layerId">
 
             <label>
                 Nom
-                <input type="text" id="name" required placeholder="Thomas">
+                <input type="text" id="name" required maxlength="255" placeholder="Thomas" autocomplete="name">
             </label>
 
             <label>
+<<<<<<< HEAD
                 UID Squadrats
                 <input
                     type="text"
@@ -60,13 +113,17 @@
                     required
                     placeholder="5uGyABXymyL1i5RP1YtpiBzUG4x1"
                 >
+=======
+                URL du GeoJSON
+                <input type="url" id="geojsonUrl" required placeholder="https://…">
+>>>>>>> bd11d53 (maj)
             </label>
 
-            <div id="formError" class="error"></div>
+            <p id="formError" class="form-error" role="alert"></p>
 
             <div class="buttons">
-                <button type="button" id="cancelButton">Annuler</button>
-                <button type="submit" class="primary">Enregistrer</button>
+                <button type="button" id="cancelButton" class="btn ghost">Annuler</button>
+                <button type="submit" class="btn primary">Enregistrer</button>
             </div>
         </form>
     </div>
