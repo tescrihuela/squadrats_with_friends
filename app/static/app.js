@@ -2,11 +2,6 @@ const map = L.map("map", { zoomControl: false }).setView([46.5, 2.5], 6);
 
 const esriAttribution = "Tiles &copy; Esri";
 
-<<<<<<< HEAD
-
-// --- Fonds de carte ---
-=======
->>>>>>> bd11d53 (maj)
 const baseMaps = {
     "Gris clair": L.layerGroup([
         L.tileLayer(
@@ -22,179 +17,20 @@ const baseMaps = {
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         { maxZoom: 19, attribution: "&copy; OpenStreetMap contributors" }
     ),
-<<<<<<< HEAD
-
-    "Carto Positron": L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2gk1_1_8e1ea88c2fa1c25338c6a05f",
-        {
-            maxZoom: 20,
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        }
-    ),
-
-    "Carto Dark Matter": L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=cb1_2gk1_1_8e1ea88c2fa1c25338c6a05f",
-        {
-            maxZoom: 20,
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        }
-    ),
-
-    "Esri World Imagery": L.tileLayer(
-=======
     "Satellite": L.tileLayer(
->>>>>>> bd11d53 (maj)
         "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         { maxZoom: 19, attribution: esriAttribution }
     )
 };
 
-<<<<<<< HEAD
-baseMaps["Carto Positron"].addTo(map);
-
-
-// --- Grilles Squadrats / Squadratinhos ---
-
-const squadratsGrid = L.layerGroup();
-const squadratinhosGrid = L.layerGroup();
-
-const overlayMaps = {
-    "Squadrats": squadratsGrid,
-    "Squadratinhos": squadratinhosGrid
-};
-
-L.control.layers(
-    baseMaps,
-    overlayMaps,
-    {
-        collapsed: false
-    }
-).addTo(map);
-
-// --- Calcul des tuiles OSM ---
-
-function latLngToTile(lat, lon, zoom) {
-    const n = Math.pow(2, zoom);
-
-    const x = Math.floor((lon + 180) / 360 * n);
-
-    const latRad = lat * Math.PI / 180;
-
-    const y = Math.floor(
-        (1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * n
-    );
-
-    return { x, y };
-}
-
-
-function tileToLatLng(x, y, zoom) {
-    const n = Math.pow(2, zoom);
-
-    const lon = x / n * 360 - 180;
-
-    const latRad = Math.atan(
-        Math.sinh(Math.PI * (1 - 2 * y / n))
-    );
-
-    const lat = latRad * 180 / Math.PI;
-
-    return { lat, lon };
-}
-
-function updateGrid(layerGroup, zoom) {
-    layerGroup.clearLayers();
-
-    const bounds = map.getBounds();
-
-    const northWest = latLngToTile(
-        bounds.getNorth(),
-        bounds.getWest(),
-        zoom
-    );
-
-    const southEast = latLngToTile(
-        bounds.getSouth(),
-        bounds.getEast(),
-        zoom
-    );
-
-    // Petite marge pour éviter les trous au bord de l'écran
-    const minX = northWest.x - 1;
-    const maxX = southEast.x + 1;
-    const minY = northWest.y - 1;
-    const maxY = southEast.y + 1;
-
-    for (let x = minX; x <= maxX; x++) {
-        for (let y = minY; y <= maxY; y++) {
-
-            const nw = tileToLatLng(x, y, zoom);
-            const se = tileToLatLng(x + 1, y + 1, zoom);
-
-            L.rectangle(
-                [
-                    [nw.lat, nw.lon],
-                    [se.lat, se.lon]
-                ],
-                {
-                    color: "#1b5e20",
-                    weight: 0.5,
-                    opacity: 0.2,
-                    fill: false,
-                    interactive: false
-                }
-            ).addTo(layerGroup);
-        }
-    }
-}
-
-
-function updateGrids() {
-
-    const zoom = map.getZoom();
-
-    if (map.hasLayer(squadratsGrid)) {
-        if (zoom >= 10) {
-		updateGrid(squadratsGrid, 14);
-	}
-	else {
-		squadratsGrid.clearLayers();
-	}
-    }
-
-    if (map.hasLayer(squadratinhosGrid)) {
-
-        if (zoom >= 13) {
-            updateGrid(squadratinhosGrid, 17);
-        } else {
-            squadratinhosGrid.clearLayers();
-        }
-    }
-}
-map.on("moveend", updateGrids);
-=======
 baseMaps["Gris clair"].addTo(map);
 L.control.zoom({ position: "topright" }).addTo(map);
 L.control.scale({ imperial: false, position: "bottomleft" }).addTo(map);
->>>>>>> bd11d53 (maj)
 
 map.createPane("grids");
 map.getPane("grids").style.zIndex = 350;
 map.getPane("grids").style.pointerEvents = "none";
 
-<<<<<<< HEAD
-const colors = [
-    "#e74c3c",
-    "#3388ff",
-    "#9b59b6",
-    "#f39c12",
-    "#2ecc71",
-    "#1abc9c",
-    "#e84393",
-    "#636e72",
-    "#d63031",
-    "#0984e3"
-=======
 const squadratsGrid = L.layerGroup();
 const squadratinhosGrid = L.layerGroup();
 const STORAGE_GRID_SQUADRATS = "squadrats-maison-grid-squadrats";
@@ -336,12 +172,11 @@ const MODE_CATALOG = [
         label: "Ubersquadratinho",
         hint: "Le plus grand carré entièrement rempli de squadratinhos."
     }
->>>>>>> bd11d53 (maj)
 ];
 
 const OUTLINE_ID = "squadrats-outline";
-const STORAGE_MODE = "squadrats-maison-mode";
-const STORAGE_OUTLINE = "squadrats-maison-outline";
+const STORAGE_MODES = "squadrats-maison-modes";
+const STORAGE_RANKING = "squadrats-maison-ranking";
 
 const users = new Map();
 const colors = [
@@ -357,8 +192,8 @@ const colors = [
     "#475569"
 ];
 
-let activeMode = readStorage(STORAGE_MODE) || "squadratinhos";
-let outlineEnabled = readStorage(STORAGE_OUTLINE) === "1";
+let selectedModes = loadSelectedModes();
+let rankingMode = readStorage(STORAGE_RANKING) || "squadratinhos";
 let didFitOnce = false;
 let toastTimer = 0;
 
@@ -376,6 +211,22 @@ function writeStorage(key, value) {
     } catch {
         /* stockage indisponible */
     }
+}
+
+function loadSelectedModes() {
+    const raw = readStorage(STORAGE_MODES);
+    if (raw) {
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+                return new Set(parsed.filter(id => typeof id === "string" && id !== OUTLINE_ID));
+            }
+        } catch {
+            /* valeur illisible */
+        }
+    }
+    const legacy = readStorage("squadrats-maison-mode");
+    return new Set([legacy && legacy !== OUTLINE_ID ? legacy : "squadratinhos"]);
 }
 
 function getColor(index) {
@@ -481,20 +332,24 @@ function collectModes() {
     return { known, extra };
 }
 
-function hasOutline() {
-    let found = false;
-    users.forEach(entry => {
-        if (entry.features[OUTLINE_ID]) found = true;
-    });
-    return found;
+function availableModeIds() {
+    const { known, extra } = collectModes();
+    return [...known.map(mode => mode.id), ...extra];
 }
 
-function ensureActiveMode() {
-    const { known, extra } = collectModes();
-    const ids = [...known.map(mode => mode.id), ...extra];
-    if (ids.includes(activeMode)) return;
-    if (ids.includes("squadratinhos")) activeMode = "squadratinhos";
-    else activeMode = ids[0] || "";
+function ensureModes() {
+    const ids = availableModeIds();
+    const valid = new Set(ids);
+    selectedModes = new Set([...selectedModes].filter(id => valid.has(id)));
+    if (selectedModes.size === 0) {
+        if (valid.has("squadratinhos")) selectedModes.add("squadratinhos");
+        else if (ids[0]) selectedModes.add(ids[0]);
+    }
+    if (!valid.has(rankingMode)) {
+        rankingMode = selectedModes.values().next().value || ids[0] || "";
+    }
+    writeStorage(STORAGE_MODES, JSON.stringify([...selectedModes]));
+    writeStorage(STORAGE_RANKING, rankingMode);
 }
 
 function createUserLayer(user, index, visible) {
@@ -551,23 +406,16 @@ function applyMode() {
         });
     });
 
-    const visible = entries
-        .filter(entry => entry.visible)
-        .sort((a, b) => (sizeOf(b, activeMode) ?? -1) - (sizeOf(a, activeMode) ?? -1));
-
-    visible.forEach(entry => {
-        const item = entry.features[activeMode];
-        if (item) item.layer.addTo(map);
-    });
-
-    if (outlineEnabled) {
-        visible.forEach(entry => {
-            const outline = entry.features[OUTLINE_ID];
-            if (!outline) return;
-            outline.layer.addTo(map);
-            outline.layer.bringToFront();
+    const pieces = [];
+    entries.filter(entry => entry.visible).forEach(entry => {
+        selectedModes.forEach(modeId => {
+            const item = entry.features[modeId];
+            if (!item) return;
+            pieces.push({ item, size: sizeOf(entry, modeId) ?? -1 });
         });
-    }
+    });
+    pieces.sort((a, b) => b.size - a.size);
+    pieces.forEach(piece => piece.item.layer.addTo(map));
 
     renderPeople();
     updateModeChrome();
@@ -577,20 +425,29 @@ function fitToVisible() {
     const bounds = L.latLngBounds([]);
     users.forEach(entry => {
         if (!entry.visible) return;
-        const item = entry.features[activeMode];
-        if (!item || !map.hasLayer(item.layer)) return;
-        const layerBounds = item.layer.getBounds();
-        if (layerBounds.isValid()) bounds.extend(layerBounds);
+        selectedModes.forEach(modeId => {
+            const item = entry.features[modeId];
+            if (!item || !map.hasLayer(item.layer)) return;
+            const layerBounds = item.layer.getBounds();
+            if (layerBounds.isValid()) bounds.extend(layerBounds);
+        });
     });
     if (!bounds.isValid()) return;
     map.fitBounds(bounds, { padding: [36, 36], animate: true, duration: 0.45 });
 }
 
-function setMode(id) {
-    activeMode = id;
-    writeStorage(STORAGE_MODE, id);
+function toggleMode(id) {
+    if (selectedModes.has(id)) selectedModes.delete(id);
+    else selectedModes.add(id);
+    writeStorage(STORAGE_MODES, JSON.stringify([...selectedModes]));
     applyMode();
-    requestAnimationFrame(() => fitToVisible());
+}
+
+function setRankingMode(id) {
+    rankingMode = id;
+    writeStorage(STORAGE_RANKING, id);
+    renderPeople();
+    updateModeChrome();
 }
 
 function setAllVisible(visible) {
@@ -611,23 +468,39 @@ function focusPerson(id) {
 
 function updateModeChrome() {
     document.querySelectorAll(".mode-btn").forEach(button => {
-        button.setAttribute("aria-checked", button.dataset.mode === activeMode ? "true" : "false");
+        button.setAttribute("aria-checked", selectedModes.has(button.dataset.mode) ? "true" : "false");
     });
 
-    const meta = MODE_CATALOG.find(mode => mode.id === activeMode);
-    document.getElementById("modeHint").textContent = meta
-        ? meta.hint
-        : (activeMode ? "Ce mode est affiché pour chaque personne." : "Aucun mode disponible.");
+    const selectedLabels = [...selectedModes].map(modeLabel);
+    const hint = document.getElementById("modeHint");
+    if (selectedModes.size === 1) {
+        const meta = MODE_CATALOG.find(mode => mode.id === [...selectedModes][0]);
+        hint.textContent = meta ? meta.hint : "Ce mode est affiché pour chaque personne.";
+    } else if (selectedModes.size > 1) {
+        hint.textContent = "Ces calques sont affichés ensemble pour chaque personne.";
+    } else {
+        hint.textContent = "Aucun calque affiché.";
+    }
 
-    const label = modeLabel(activeMode);
-    document.getElementById("rankingTitle").textContent = label;
-    document.getElementById("mapBadge").textContent = outlineEnabled && hasOutline()
-        ? `${label} + contour`
-        : label;
+    const badge = selectedLabels.length ? selectedLabels.join(" + ") : "Aucun calque";
+    document.getElementById("mapBadge").textContent = badge;
 
-    const outlineRow = document.getElementById("outlineRow");
-    outlineRow.hidden = !hasOutline();
-    document.getElementById("outlineToggle").checked = outlineEnabled;
+    const select = document.getElementById("rankingMode");
+    const ids = availableModeIds();
+    const signature = ids.join("|");
+    if (select.dataset.signature !== signature) {
+        select.dataset.signature = signature;
+        select.replaceChildren();
+        ids.forEach(id => {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = modeLabel(id);
+            select.append(option);
+        });
+    }
+    if ([...select.options].some(option => option.value === rankingMode)) {
+        select.value = rankingMode;
+    }
 }
 
 function renderModeControls() {
@@ -664,9 +537,9 @@ function renderModeControls() {
                 button.type = "button";
                 button.className = "mode-btn";
                 button.dataset.mode = mode.id;
-                button.setAttribute("role", "radio");
+                button.setAttribute("role", "checkbox");
                 button.textContent = mode.label;
-                button.addEventListener("click", () => setMode(mode.id));
+                button.addEventListener("click", () => toggleMode(mode.id));
                 buttons.append(button);
             });
 
@@ -777,7 +650,7 @@ function renderPeople() {
 
     const rows = [...users.values()].map(entry => ({
         entry,
-        size: sizeOf(entry, activeMode)
+        size: sizeOf(entry, rankingMode)
     }));
     const visible = rows.filter(row => row.entry.visible).sort(compareRows);
     const hidden = rows.filter(row => !row.entry.visible).sort(compareRows);
@@ -830,84 +703,7 @@ function renderUsers(layers, hidden) {
             createUserLayer(user, index, !hidden.has(user.id));
         });
 
-<<<<<<< HEAD
-	const name = document.createElement("span");
-	name.className = "user-name";
-	name.textContent = user.name;
-
-	const colorIndicator = document.createElement("span");
-	colorIndicator.className = "user-color-indicator";
-	colorIndicator.style.backgroundColor = getColor(index);
-
-        const edit = document.createElement("button");
-        edit.className = "icon-button";
-        edit.title = "Modifier";
-        edit.textContent = "✏️";
-        edit.addEventListener("click", () => openEditModal(user));
-
-        const remove = document.createElement("button");
-        remove.className = "icon-button";
-        remove.title = "Supprimer";
-        remove.textContent = "🗑️";
-        remove.addEventListener("click", () => deleteUser(user));
-
-        header.append(checkbox, colorIndicator, name, edit, remove);
-        element.appendChild(header);
-
-        const features = document.createElement("div");
-        features.className = "features";
-
-        user.geojson.features.forEach(feature => {
-            const featureName = getFeatureName(feature);
-
-            // Entités techniques que l'on ne veut pas afficher dans l'interface
-            const hiddenFeatures = [
-                "backyardinhos",
-                "backyards",
-                "squadrats-outline"
-            ];
-
-            if (hiddenFeatures.includes(featureName.toLowerCase())) {
-                return;
-            }
-
-            const featureSize = getFeatureSize(feature);
-
-            const row = document.createElement("label");
-            row.className = "feature";
-
-            const featureCheckbox = document.createElement("input");
-            featureCheckbox.type = "checkbox";
-            featureCheckbox.className = "feature-checkbox";
-            featureCheckbox.dataset.user = user.id;
-            featureCheckbox.dataset.feature = featureName;
-
-            // Seul Squadratinhos est actif par défaut.
-            featureCheckbox.checked =
-                featureName.toLowerCase() === "squadratinhos";
-
-            featureCheckbox.addEventListener("change", () => {
-                setFeatureVisibility(user.id, featureName, featureCheckbox.checked);
-            });
-
-            const text = document.createElement("span");
-            text.textContent = featureName;
-
-            const size = document.createElement("span");
-            size.className = "feature-size";
-            size.textContent = formatSize(featureSize);
-
-            row.append(featureCheckbox, text, size);
-            features.appendChild(row);
-        });
-
-        element.appendChild(features);
-        container.appendChild(element);
-    });
-
-    updateRanking();
-=======
-    ensureActiveMode();
+    ensureModes();
     renderModeControls();
     applyMode();
 
@@ -915,7 +711,6 @@ function renderUsers(layers, hidden) {
         didFitOnce = true;
         requestAnimationFrame(() => fitToVisible());
     }
->>>>>>> bd11d53 (maj)
 }
 
 async function loadLayers() {
@@ -970,42 +765,21 @@ async function saveUser(event) {
     submit.disabled = true;
 
     try {
-<<<<<<< HEAD
-        const method = id ? "PUT" : "POST";
-        const url = id
-            ? `/squadrats/api/layers/${id}`
-            : "/squadrats/api/layers";
-
-        const response = await fetch(url, {
-            method,
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                name,
-                squadrats_uid
-            })
-=======
         const response = await fetch(id ? `/squadrats/api/layers/${id}` : "/squadrats/api/layers", {
             method: id ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, geojson_url })
->>>>>>> bd11d53 (maj)
+            body: JSON.stringify({ name, squadrats_uid })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || "Erreur inconnue.");
 
         closeModal();
         await loadLayers();
-<<<<<<< HEAD
-
-    } catch (e) {
-        error.textContent = e.message;
-=======
         showToast(id ? `${name.trim()} a été mis à jour.` : `${name.trim()} a été ajouté.`);
     } catch (err) {
         error.textContent = err.message;
     } finally {
         submit.disabled = false;
->>>>>>> bd11d53 (maj)
     }
 }
 
@@ -1038,10 +812,8 @@ document.addEventListener("keydown", event => {
 document.getElementById("showAll").addEventListener("click", () => setAllVisible(true));
 document.getElementById("hideAll").addEventListener("click", () => setAllVisible(false));
 document.getElementById("fitButton").addEventListener("click", fitToVisible);
-document.getElementById("outlineToggle").addEventListener("change", event => {
-    outlineEnabled = event.target.checked;
-    writeStorage(STORAGE_OUTLINE, outlineEnabled ? "1" : "0");
-    applyMode();
+document.getElementById("rankingMode").addEventListener("change", event => {
+    setRankingMode(event.target.value);
 });
 
 document.getElementById("refreshLayersBtn").addEventListener("click", async () => {
@@ -1059,29 +831,6 @@ document.getElementById("refreshLayersBtn").addEventListener("click", async () =
 
         await loadLayers();
 
-<<<<<<< HEAD
-            if (!response.ok) {
-                throw new Error(result.detail || "Erreur");
-            }
-
-            console.log("Actualisation terminée :", result);
-
-            // Recharge les données affichées
-            await loadLayers();
-
-            alert("Les GeoJSON ont été actualisés.");
-
-        } catch (error) {
-            console.error(error);
-            alert(
-                "Erreur lors de l'actualisation : " +
-                error.message
-            );
-
-        } finally {
-            button.disabled = false;
-            button.textContent = "↻ Actualiser";
-=======
         const updated = result.updated ?? 0;
         const failed = result.failed ?? 0;
         if (failed) {
@@ -1090,7 +839,6 @@ document.getElementById("refreshLayersBtn").addEventListener("click", async () =
             showToast(`${updated} cartes actualisées.`);
         } else {
             showToast("Carte actualisée.");
->>>>>>> bd11d53 (maj)
         }
     } catch (error) {
         showToast(`Actualisation impossible : ${error.message}`);

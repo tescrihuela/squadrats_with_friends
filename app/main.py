@@ -1,5 +1,4 @@
 from pathlib import Path
-import re
 import httpx
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -32,42 +31,9 @@ def get_geojson_url(uid: str) -> str:
 def index():
     return FileResponse(BASE_DIR / "static" / "index.html")
 
-<<<<<<< HEAD
 async def get_geojson_url_from_uid(uid: str) -> str:
     url = get_geojson_url(uid)
 
-=======
-TROPHY_UID = re.compile(r"/trophies/([^/]+)/")
-MAINFRAME_GEOJSON = "https://mainframe-api.squadrats.com/anonymous/squadrants/{uid}/geojson"
-
-async def resolve_geojson_url(url: str) -> str:
-    """Les liens squadrats.org expirent. On redemande l'URL fraîche via l'identifiant."""
-    match = TROPHY_UID.search(url)
-    if not match:
-        return url
-
-    lookup = MAINFRAME_GEOJSON.format(uid=match.group(1))
-    try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
-            response = await client.get(lookup)
-            response.raise_for_status()
-            data = response.json()
-    except (httpx.HTTPError, ValueError) as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Impossible de retrouver le GeoJSON Squadrats : {e}"
-        )
-
-    fresh = data.get("url") if isinstance(data, dict) else None
-    if not isinstance(fresh, str) or not fresh:
-        raise HTTPException(
-            status_code=400,
-            detail="L'API Squadrats ne fournit pas d'URL GeoJSON."
-        )
-    return fresh
-
-async def download_geojson(url: str) -> dict:
->>>>>>> bd11d53 (maj)
     try:
         async with httpx.AsyncClient(
             follow_redirects=True,
@@ -165,20 +131,15 @@ async def refresh_layers(db: Session = Depends(get_db)):
 
     for layer in layers:
         try:
-<<<<<<< HEAD
             geojson_url = await get_geojson_url_from_uid(
                 layer.squadrats_uid
             )
 
-=======
-            geojson_url = await resolve_geojson_url(layer.geojson_url)
->>>>>>> bd11d53 (maj)
             geojson = await download_geojson(geojson_url)
 
             crud.update_layer(
                 db,
                 layer,
-                geojson_url=geojson_url,
                 geojson=geojson
             )
 
@@ -221,7 +182,6 @@ async def create_layer(
 ):
     name = payload.name.strip()
 
-<<<<<<< HEAD
     if not name:
         raise HTTPException(
             status_code=400,
@@ -237,9 +197,6 @@ async def create_layer(
         )
 
     geojson_url = await get_geojson_url_from_uid(uid)
-=======
-    geojson_url = await resolve_geojson_url(str(payload.geojson_url))
->>>>>>> bd11d53 (maj)
     geojson = await download_geojson(geojson_url)
 
     return crud.create_layer(
@@ -269,7 +226,6 @@ async def update_layer(
     geojson = None
     uid = None
 
-<<<<<<< HEAD
     if payload.squadrats_uid is not None:
         uid = payload.squadrats_uid.strip()
 
@@ -279,12 +235,7 @@ async def update_layer(
                 detail="Le UID Squadrats ne peut pas être vide."
             )
 
-        url = get_geojson_url(uid)
         geojson_url = await get_geojson_url_from_uid(uid)
-=======
-    if payload.geojson_url is not None:
-        geojson_url = await resolve_geojson_url(str(payload.geojson_url))
->>>>>>> bd11d53 (maj)
         geojson = await download_geojson(geojson_url)
         
     name = None

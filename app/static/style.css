@@ -246,6 +246,26 @@ h2 {
     box-shadow: 0 8px 16px rgba(102, 51, 153, 0.22);
 }
 
+.ranking-pick {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.ranking-pick select {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 560;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    border: 0;
+    background: transparent;
+    padding: 0 18px 0 0;
+    max-width: 100%;
+    cursor: pointer;
+}
+
 .hint,
 .summary,
 .empty {

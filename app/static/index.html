@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#663399">
     <title>Squadrats Maison</title>
-<<<<<<< HEAD
-    <link rel="icon" type="image/svg+xml" href="/squadrats/static/Q-production.svg">
-=======
     <link rel="icon" href="/squadrats/static/Q-production.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
->>>>>>> bd11d53 (maj)
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.84.2/dist/L.Control.Locate.min.css">
     <link rel="stylesheet" href="/squadrats/static/style.css">
@@ -45,21 +41,17 @@
                 <p class="eyebrow">Mode commun</p>
                 <h2 id="modeHeading">Pour tout le monde</h2>
             </div>
-            <p class="lede">Un seul choix affiche ce calque pour chaque personne.</p>
-            <div id="modeGrid" role="radiogroup" aria-label="Mode affiché pour tout le monde"></div>
+            <p class="lede">Chaque mode s’affiche pour tout le monde. On peut en combiner plusieurs.</p>
+            <div id="modeGrid" role="group" aria-label="Modes affichés pour tout le monde"></div>
             <p id="modeHint" class="hint">Chargement des cartes…</p>
-            <label class="switch-row" id="outlineRow" hidden>
-                <input type="checkbox" id="outlineToggle">
-                <span>Superposer le contour</span>
-            </label>
         </section>
 
-        <section class="card" aria-labelledby="rankingTitle">
+        <section class="card" aria-label="Classement">
             <div class="section-head">
-                <div>
-                    <p class="eyebrow">Classement</p>
-                    <h2 id="rankingTitle">Squadratinhos</h2>
-                </div>
+                <label class="ranking-pick">
+                    <span class="eyebrow">Classement</span>
+                    <select id="rankingMode" aria-label="Mode utilisé pour le classement"></select>
+                </label>
                 <div class="text-actions">
                     <button type="button" id="showAll">Tout afficher</button>
                     <button type="button" id="hideAll">Tout masquer</button>
@@ -72,14 +64,9 @@
     </aside>
     <main>
         <div id="map"></div>
-<<<<<<< HEAD
-        <button id="sidebarToggle" class="sidebar-toggle" title="Afficher le menu">
-            &#9776;
-        </button>
-=======
         <div id="mapBadge" class="map-badge">Squadratinhos</div>
         <div id="mapLegend" class="map-legend"></div>
->>>>>>> bd11d53 (maj)
+        <button id="sidebarToggle" class="sidebar-toggle" type="button" title="Afficher le menu">&#9776;</button>
     </main>
 </div>
 
@@ -87,14 +74,9 @@
 
 <div id="modal" class="modal hidden">
     <div class="modal-content">
-<<<<<<< HEAD
-        <button id="closeModal" class="close">&#215;</button>
-        <h2 id="modalTitle">Ajouter un utilisateur</h2>
-=======
         <button id="closeModal" class="close" type="button" aria-label="Fermer">×</button>
         <p class="eyebrow">Carte</p>
         <h2 id="modalTitle">Ajouter une personne</h2>
->>>>>>> bd11d53 (maj)
 
         <form id="layerForm">
             <input type="hidden" id="layerId">
@@ -105,18 +87,8 @@
             </label>
 
             <label>
-<<<<<<< HEAD
                 UID Squadrats
-                <input
-                    type="text"
-                    id="squadratsUid"
-                    required
-                    placeholder="5uGyABXymyL1i5RP1YtpiBzUG4x1"
-                >
-=======
-                URL du GeoJSON
-                <input type="url" id="geojsonUrl" required placeholder="https://…">
->>>>>>> bd11d53 (maj)
+                <input type="text" id="squadratsUid" required maxlength="255" placeholder="5uGyABXymyL1i5RP1YtpiBzUG4x1" autocomplete="off" spellcheck="false">
             </label>
 
             <p id="formError" class="form-error" role="alert"></p>
